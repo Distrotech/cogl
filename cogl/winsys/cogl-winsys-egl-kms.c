@@ -330,7 +330,6 @@ update_outputs (CoglRenderer *renderer)
     {
       CoglOutput *output = NULL;
       CoglOutputKMS *kms_output;
-      const char *type_name;
       GList *l;
 
       drmModeConnector *connector =
@@ -352,7 +351,7 @@ update_outputs (CoglRenderer *renderer)
         }
 
       /* If we already have a CoglOutput corresponding to this
-       * connector id then we can simply keep it and move on... */
+       * connector id then we keep it... */
       for (l = renderer->outputs; l; l = l->next)
         {
           CoglOutput *existing_output = l->data;
@@ -362,53 +361,82 @@ update_outputs (CoglRenderer *renderer)
             {
               renderer->outputs = g_list_delete_link (renderer->outputs, l);
               output = existing_output;
+              kms_output = output->winsys;
+
+              if (output->pending != output->state)
+                {
+                  g_warning ("Unexpected pending state associated with CoglOutput "
+                             "%s while processing events. Pending output state "
+                             "shouldn't be maintained between mainloop "
+                             "iterations\n", output->state->name);
+                }
+
+              break;
             }
         }
 
-      if (output)
+      if (!output)
         {
-          new_outputs = g_list_prepend (new_outputs, output);
-          drmModeFreeConnector (connector);
-          continue;
+          const char *type_name;
+
+          if (connector->connector_type < G_N_ELEMENTS (kms_connector_types))
+            type_name = kms_connector_types[connector->connector_type];
+          else
+            type_name = kms_connector_types[0];
+
+          output = _cogl_output_new (type_name);
+
+          kms_output = g_slice_new0 (CoglOutputKMS);
+          kms_output->connector_id = connector->connector_id;
+          kms_output->connector = connector;
+
+          _cogl_output_set_winsys_data (output,
+                                        kms_output,
+                                        kms_output_destroy_cb);
         }
 
-      if (connector->connector_type < G_N_ELEMENTS (kms_connector_types))
-        type_name = kms_connector_types[connector->connector_type];
-      else
-        type_name = kms_connector_types[0];
+      for (j = 0; j < resources->count_modes; j++)
+        {
+          drmModeModeInfo *info = &resources->modes[j];
 
-      output = _cogl_output_new (type_name);
+          CoglMode *mode = _cogl_mode_new (info->name);
+          mode->width = info->hdisplay;
+          mode->height = info->vdisplay;
+          mode->refresh_rate =
+            (info->clock / ((float)info->htotal * info->vtotal));
+          new_modes = g_list_prepend (new_modes, mode);
+        }
 
-      kms_output = g_slice_new0 (CoglOutputKMS);
-      kms_output->connector_id = connector->connector_id;
-      kms_output->connector = connector;
+      if (output->modes)
+        g_list_free_full (output->modes, cogl_object_unref);
+      output->modes = g_list_reverse (new_modes);
 
       /* We can't determinine anything about the relative position
        * of the outputs... */
-      output->x = output->y = 0;
+      output->state->x = output->state->y = 0;
 
-      output->mm_width = connector->mmWidth;
-      output->mm_height = connector->mmHeight;
+      output->state->mm_width = connector->mmWidth;
+      output->state->mm_height = connector->mmHeight;
 
       switch (connector->subpixel)
         {
         case DRM_MODE_SUBPIXEL_UNKNOWN:
-          output->subpixel_order = COGL_SUBPIXEL_ORDER_UNKNOWN;
+          output->state->subpixel_order = COGL_SUBPIXEL_ORDER_UNKNOWN;
           break;
         case DRM_MODE_SUBPIXEL_HORIZONTAL_RGB:
-          output->subpixel_order = COGL_SUBPIXEL_ORDER_HORIZONTAL_RGB;
+          output->state->subpixel_order = COGL_SUBPIXEL_ORDER_HORIZONTAL_RGB;
           break;
         case DRM_MODE_SUBPIXEL_HORIZONTAL_BGR:
-          output->subpixel_order = COGL_SUBPIXEL_ORDER_HORIZONTAL_BGR;
+          output->state->subpixel_order = COGL_SUBPIXEL_ORDER_HORIZONTAL_BGR;
           break;
         case DRM_MODE_SUBPIXEL_VERTICAL_RGB:
-          output->subpixel_order = COGL_SUBPIXEL_ORDER_VERTICAL_RGB;
+          output->state->subpixel_order = COGL_SUBPIXEL_ORDER_VERTICAL_RGB;
           break;
         case DRM_MODE_SUBPIXEL_VERTICAL_BGR:
-          output->subpixel_order = COGL_SUBPIXEL_ORDER_VERTICAL_BGR;
+          output->state->subpixel_order = COGL_SUBPIXEL_ORDER_VERTICAL_BGR;
           break;
         case DRM_MODE_SUBPIXEL_NONE:
-          output->subpixel_order = COGL_SUBPIXEL_ORDER_NONE;
+          output->state->subpixel_order = COGL_SUBPIXEL_ORDER_NONE;
           break;
         }
 
@@ -435,29 +463,19 @@ update_outputs (CoglRenderer *renderer)
             }
         }
 
-      if (kms_output->saved_crtc)
-        {
-          output->width = kms_output->saved_crtc->width;
-          output->height = kms_output->saved_crtc->height;
+      if (output->state->mode)
+        cogl_object_unref (output->state->mode);
+      output->state->mode = NULL;
 
-          if (kms_output->saved_crtc->mode_valid)
-            {
-              drmModeModeInfo *mode = &kms_output->saved_crtc->mode;
-              output->refresh_rate = mode->vrefresh;
-            }
-        }
-      else
+      if (kms_output->saved_crtc &&
+          kms_output->saved_crtc->mode_valid)
         {
-          /* If there is no encoder associated with the connector then
-           * there is no crtc mode and so there's currently no basis
-           * to specify a width/height */
-          output->width = 0;
-          output->height = 0;
-        }
+          output->state->mode =
+            find_mode (output->modes, kms_output->saved_crtc->mode.name);
+          cogl_object_ref (output->state->mode);
 
-      _cogl_output_set_winsys_data (output,
-                                    kms_output,
-                                    kms_output_destroy_cb);
+          g_warn_if_fail (output->state->mode);
+        }
 
       new_outputs = g_list_prepend (new_outputs, output);
     }
@@ -472,6 +490,8 @@ update_outputs (CoglRenderer *renderer)
   renderer->outputs = new_outputs;
 
   drmModeFreeResources (resources);
+
+  _cogl_renderer_notify_outputs_changed (renderer);
 }
 
 static void
@@ -1152,6 +1172,165 @@ _cogl_winsys_onscreen_deinit (CoglOnscreen *onscreen)
   onscreen->winsys = NULL;
 }
 
+static drmModeProperty *
+get_connector_property (int fd,
+                        drmModeConnector *connector,
+                        const char *name)
+{
+  drmModeProperty *property;
+  int i;
+
+  for (i = 0; i < connector->count_props; i++)
+    {
+      property = drmModeGetProperty (fd, connector->props[i]);
+      if (!property)
+        continue;
+
+      if (strcmp (property->name, name) == 0)
+        return props;
+
+      drmModeFreeProperty (property);
+    }
+
+  return NULL;
+}
+
+static void
+_cogl_winsys_commit_outputs (CoglRenderer *renderer,
+                             CoglError **error)
+{
+  CoglRendererEGL *egl_renderer = renderer->winsys;
+  CoglRendererKMS *kms_renderer = egl_renderer->platform;
+  GList *l;
+
+  /*
+   * Ideally we never want to mode-switch to un-initialized
+   * memory or even a temporary buffer since that could introduce
+   * flashes if trying to seamlessly transition from a previous
+   * state.
+   *
+   * If we don't actually make the mode-switchess during the commit
+   * though there's a chance that we'll fail later during
+   * _swap_buffers where we don't have a way of reporting runtime
+   * errors.
+   *
+   * Considering both of of these issues we always mode-switch during
+   * the _commit() and if no source buffer is yet available then we
+   * will setup a source buffer ourselves first. Although this could
+   * cause flashes, those artifacts can be avoided by applications if
+   * they always ensure they have rendered overlay source buffers
+   * before attempting a mode-switch.
+   */
+
+  for (l = renderer->outputs; l; l = l->next)
+    {
+      CoglOutput *output = l->data;
+      CoglOutputKMS *kms_output = output->winsys;
+      CoglOutputState *state_old = output->state;
+      CoglOutputState *state_new = output->pending;
+      GList *old_overlay0_link, *new_overlay0_link;
+      drmModeProperty *property;
+
+      if (state_old == state_new)
+        continue;
+
+      connector = drmModeGetConnector (kms_renderer->fd,
+                                       kms_output->connector_id);
+      if (!connector)
+        {
+          g_warn_if_reached ();
+          continue;
+        }
+
+      if (b->output->pending->overlays)
+        overlay0_new = state_new->output->pending->overlays->data;
+      else
+        overlay0_new = NULL;
+
+      if (!overlay0_new ||
+          state_old->dpms_mode != state_new->dpms_mode)
+        {
+          /* If the output has no associated overlays then we assume
+           * it's ok to try and put it into DPMS_MODE_OFF */
+          dpms_mode = overlay0_new ? state_new->dpms_mode : DRM_MODE_DPMS_OFF;
+
+          property = get_connector_property (kms_renderer->fd,
+                                             connector,
+                                             "DPMS");
+          if (property)
+            {
+              drmModeConnectorSetProperty (kms_renderer->fd,
+                                           connector->connector_id,
+                                           property->prop_id, dpms_mode);
+              drmModeFreeProperty (property);
+            }
+        }
+
+      drmModeFreeConnector (connector);
+
+      if (!state_new->output->pending->overlays)
+        {
+
+        }
+
+      /* We always assume there is always at least one overlay
+       * associated with each output */
+      g_warn_if_fail (b->output->pending->overlays &&
+                      b->output->pending->overlays->data);
+      overlay0_b = b->output->pending->overlays->data;
+
+      /* We also assume there is always source associated with
+       * each overlay */
+      g_warn_if_fail (overlay0_b->onscreen_source);
+
+      b_overlay0_link = b->output->pending->overlays;
+      if (!
+
+#error FIXME
+      /* First setup the crtc mode, using the source from the
+       * lowest overlay associated with the output. */
+
+      /* Now setup planes for all remaining overlays */
+      for (m = a->overlays, n = b->overlays;
+           ;
+           m = m->next, n = n->next)
+        {
+          CoglOverlay *overlay_m, *overlay_n;
+
+          if (m && n && _cogl_overlay_equal (m->data, n->data))
+            continue;
+
+          overlay_m = m->data;
+
+          if (!m || overlay_m->onscreen_source != overlay_n->onscreen_source)
+            {
+
+            }
+#error FIXME
+        }
+
+  /* Note: In the future we might support other sources, such as for
+   * video */
+  CoglOnscreen *onscreen_source;
+
+  /* XXX: src_x must be the first member for _cogl_overlay_equal() to
+   * work and all remaining members should be comparable via
+   * memcpy() */
+
+  /* What region of the source should be overlayed? */
+  int src_x;
+  int src_y;
+  int src_width;
+  int src_height;
+
+  int dst_x;
+  int dst_y;
+
+
+      _cogl_output_update_state (output);
+    }
+}
+
 static const CoglWinsysEGLVtable
 _cogl_winsys_egl_vtable =
   {
@@ -1191,6 +1370,8 @@ _cogl_winsys_egl_kms_get_vtable (void)
       vtable.onscreen_swap_region = NULL;
       vtable.onscreen_swap_buffers_with_damage =
         _cogl_winsys_onscreen_swap_buffers_with_damage;
+
+      vtable.commit_outputs = _cogl_winsys_commit_outputs;
 
       vtable_inited = TRUE;
     }

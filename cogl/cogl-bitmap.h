@@ -28,6 +28,10 @@
 #ifndef __COGL_BITMAP_H__
 #define __COGL_BITMAP_H__
 
+/* We forward declare the CoglBitmap type here to help deal with
+ * circular type references between headers. */
+typedef struct _CoglBitmap CoglBitmap;
+
 #include <cogl/cogl-types.h>
 #include <cogl/cogl-buffer.h>
 #include <cogl/cogl-context.h>
@@ -38,8 +42,6 @@
 #endif
 
 COGL_BEGIN_DECLS
-
-typedef struct _CoglBitmap CoglBitmap;
 
 /**
  * SECTION:cogl-bitmap
