@@ -90,6 +90,8 @@ COGL_BEGIN_DECLS
 
 #define COGL_FRAMEBUFFER(X) ((CoglFramebuffer *)(X))
 
+COGL_GTYPE_DECLARE_TYPE (framebuffer);
+
 /**
  * cogl_framebuffer_allocate:
  * @framebuffer: A #CoglFramebuffer
