@@ -45,7 +45,7 @@ typedef struct _CoglOnscreen CoglOnscreen;
 COGL_GTYPE_DECLARE_TYPE (onscreen);
 
 /**
- * cogl_onscreen_new:
+ * cogl_onscreen_new: (constructor)
  * @context: A #CoglContext
  * @width: The desired framebuffer width
  * @height: The desired framebuffer height
