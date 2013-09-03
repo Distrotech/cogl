@@ -91,6 +91,8 @@ COGL_BEGIN_DECLS
 
 #define COGL_CONTEXT(OBJECT) ((CoglContext *)OBJECT)
 
+COGL_GTYPE_DECLARE_TYPE (context);
+
 /**
  * cogl_context_new:
  * @display: A #CoglDisplay pointer
