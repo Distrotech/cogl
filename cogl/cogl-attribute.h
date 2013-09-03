@@ -52,7 +52,7 @@ COGL_BEGIN_DECLS
 COGL_GTYPE_DECLARE_TYPE (attribute);
 
 /**
- * cogl_attribute_new:
+ * cogl_attribute_new: (constructor)
  * @attribute_buffer: The #CoglAttributeBuffer containing the actual
  *                    attribute data
  * @name: The name of the attribute (used to reference it from GLSL)
