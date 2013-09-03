@@ -73,7 +73,7 @@ COGL_GTYPE_DECLARE_TYPE (texture_3d);
  * fail if the requested dimensions are not supported by the
  * GPU.</note>
  *
- * Returns: A new #CoglTexture3D object with no storage yet allocated.
+ * Returns: (transfer full): A new #CoglTexture3D object with no storage yet allocated.
  * Since: 1.10
  * Stability: Unstable
  */
@@ -117,9 +117,9 @@ cogl_texture_3d_new_with_size (CoglContext *context,
  * %COGL_FEATURE_ID_TEXTURE_3D is not advertised. It can also fail if the
  * requested dimensions are not supported by the GPU.
  *
- * Return value: the newly created #CoglTexture3D or %NULL if
- *               there was an error an an exception will be returned
- *               through @error.
+ * Return value: (transfer full): the newly created #CoglTexture3D or
+ *               %NULL if there was an error an an exception will be
+ *               returned through @error.
  * Since: 1.10
  * Stability: Unstable
  */
@@ -157,8 +157,8 @@ cogl_texture_3d_new_from_data (CoglContext *context,
  * actual height of the bitmap can be larger than @height × @depth. In
  * this case it assumes there is padding between the images.
  *
- * Return value: the newly created texture or %NULL if
- *   there was an error.
+ * Return value: (transfer full): the newly created texture or %NULL
+ *   if there was an error.
  * Since: 2.0
  * Stability: unstable
  */
