@@ -132,8 +132,9 @@ COGL_GTYPE_DECLARE_TYPE (attribute);
  * mapped into the GPU which can be a bottlneck when dealing with
  * a large number of vertices.
  *
- * Returns: A newly allocated #CoglAttribute describing the
- *          layout for a list of attribute values stored in @array.
+ * Return value: (transfer full): A newly allocated #CoglAttribute
+ *          describing the layout for a list of attribute values
+ *          stored in @array.
  *
  * Since: 1.4
  * Stability: Unstable
@@ -165,8 +166,8 @@ cogl_attribute_new (CoglAttributeBuffer *attribute_buffer,
  * attribute float name;
  * |]
  *
- * Returns: A newly allocated #CoglAttribute representing the given
- *          constant @value.
+ * Return value: (transfer full): A newly allocated #CoglAttribute
+ *          representing the given constant @value.
  */
 CoglAttribute *
 cogl_attribute_new_const_1f (CoglContext *context,
@@ -192,8 +193,8 @@ cogl_attribute_new_const_1f (CoglContext *context,
  * attribute vec2 name;
  * |]
  *
- * Returns: A newly allocated #CoglAttribute representing the given
- *          constant vector.
+ * Return value: (transfer full): A newly allocated #CoglAttribute
+ *          representing the given constant vector.
  */
 CoglAttribute *
 cogl_attribute_new_const_2f (CoglContext *context,
@@ -224,8 +225,8 @@ cogl_attribute_new_const_2f (CoglContext *context,
  * unless the built in name "cogl_normal_in" is being used where no
  * explicit GLSL declaration need be made.
  *
- * Returns: A newly allocated #CoglAttribute representing the given
- *          constant vector.
+ * Return value: (transfer full): A newly allocated #CoglAttribute
+ *          representing the given constant vector.
  */
 CoglAttribute *
 cogl_attribute_new_const_3f (CoglContext *context,
@@ -259,8 +260,8 @@ cogl_attribute_new_const_3f (CoglContext *context,
  * "cogl_tex_coord0_in or "cogl_tex_coord1_in" etc is being used where
  * no explicit GLSL declaration need be made.
  *
- * Returns: A newly allocated #CoglAttribute representing the given
- *          constant vector.
+ * Return value: (transfer full): A newly allocated #CoglAttribute
+ *          representing the given constant vector.
  */
 CoglAttribute *
 cogl_attribute_new_const_4f (CoglContext *context,
@@ -288,8 +289,8 @@ cogl_attribute_new_const_4f (CoglContext *context,
  * attribute vec2 name;
  * |]
  *
- * Returns: A newly allocated #CoglAttribute representing the given
- *          constant vector.
+ * Return value: (transfer full): A newly allocated #CoglAttribute
+ *          representing the given constant vector.
  */
 CoglAttribute *
 cogl_attribute_new_const_2fv (CoglContext *context,
@@ -317,8 +318,8 @@ cogl_attribute_new_const_2fv (CoglContext *context,
  * unless the built in name "cogl_normal_in" is being used where no
  * explicit GLSL declaration need be made.
  *
- * Returns: A newly allocated #CoglAttribute representing the given
- *          constant vector.
+ * Return value: (transfer full): A newly allocated #CoglAttribute
+ *          representing the given constant vector.
  */
 CoglAttribute *
 cogl_attribute_new_const_3fv (CoglContext *context,
@@ -347,8 +348,8 @@ cogl_attribute_new_const_3fv (CoglContext *context,
  * "cogl_tex_coord0_in or "cogl_tex_coord1_in" etc is being used where
  * no explicit GLSL declaration need be made.
  *
- * Returns: A newly allocated #CoglAttribute representing the given
- *          constant vector.
+ * Return value: (transfer full): A newly allocated #CoglAttribute
+ *          representing the given constant vector.
  */
 CoglAttribute *
 cogl_attribute_new_const_4fv (CoglContext *context,
@@ -380,8 +381,8 @@ cogl_attribute_new_const_4fv (CoglContext *context,
  * around the diagonal of the matrix such that the first column
  * becomes the first row and the second column becomes the second row.
  *
- * Returns: A newly allocated #CoglAttribute representing the given
- *          constant matrix.
+ * Return value: (transfer full): A newly allocated #CoglAttribute
+ *          representing the given constant matrix.
  */
 CoglAttribute *
 cogl_attribute_new_const_2x2fv (CoglContext *context,
@@ -415,8 +416,8 @@ cogl_attribute_new_const_2x2fv (CoglContext *context,
  * becomes the first row and the second column becomes the second row
  * etc.
  *
- * Returns: A newly allocated #CoglAttribute representing the given
- *          constant matrix.
+ * Return value: (transfer full): A newly allocated #CoglAttribute
+ *          representing the given constant matrix.
  */
 CoglAttribute *
 cogl_attribute_new_const_3x3fv (CoglContext *context,
@@ -450,8 +451,8 @@ cogl_attribute_new_const_3x3fv (CoglContext *context,
  * becomes the first row and the second column becomes the second row
  * etc.
  *
- * Returns: A newly allocated #CoglAttribute representing the given
- *          constant matrix.
+ * Return value: (transfer full): A newly allocated #CoglAttribute
+ *          representing the given constant matrix.
  */
 CoglAttribute *
 cogl_attribute_new_const_4x4fv (CoglContext *context,
@@ -498,8 +499,8 @@ cogl_attribute_get_normalized (CoglAttribute *attribute);
  * cogl_attribute_get_buffer:
  * @attribute: A #CoglAttribute
  *
- * Return value: the #CoglAttributeBuffer that was set with
- * cogl_attribute_set_buffer() or cogl_attribute_new().
+ * Return value: (transfer none): the #CoglAttributeBuffer that was
+ *        set with cogl_attribute_set_buffer() or cogl_attribute_new().
  *
  * Stability: unstable
  * Since: 1.10
