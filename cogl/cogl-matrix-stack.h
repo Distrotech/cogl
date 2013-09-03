@@ -193,7 +193,7 @@ COGL_GTYPE_DECLARE_TYPE (matrix_entry);
  * cogl_matrix_stack_rotate(), cogl_matrix_stack_scale() and
  * cogl_matrix_stack_translate().
  *
- * Return value: A newly allocated #CoglMatrixStack
+ * Return value: (transfer full): A newly allocated #CoglMatrixStack
  */
 CoglMatrixStack *
 cogl_matrix_stack_new (CoglContext *ctx);
