@@ -33,6 +33,7 @@
 #include "cogl-attribute-buffer.h"
 #include "cogl-attribute-buffer-private.h"
 #include "cogl-context-private.h"
+#include "cogl-gtype-private.h"
 
 static void _cogl_attribute_buffer_free (CoglAttributeBuffer *array);
 
