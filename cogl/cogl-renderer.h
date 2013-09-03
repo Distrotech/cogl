@@ -131,6 +131,8 @@ cogl_is_renderer (void *object);
  * so Cogl will automatically connect and setup a renderer and
  * display.</note>
  *
+ * Return value: (transfer full): A newly created #CoglRenderer.
+ *
  * Since: 1.10
  * Stability: unstable
  */
