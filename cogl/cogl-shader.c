@@ -31,6 +31,7 @@
 #include "cogl-object-private.h"
 #include "cogl-glsl-shader-private.h"
 #include "cogl-glsl-shader-boilerplate.h"
+#include "cogl-gtype-private.h"
 
 #include <glib.h>
 
@@ -40,6 +41,7 @@ static void _cogl_shader_free (CoglShader *shader);
 
 COGL_HANDLE_DEFINE (Shader, shader);
 COGL_OBJECT_DEFINE_DEPRECATED_REF_COUNTING (shader);
+COGL_GTYPE_DEFINE_CLASS (Shader, shader);
 
 #ifndef GL_FRAGMENT_SHADER
 #define GL_FRAGMENT_SHADER 0x8B30
