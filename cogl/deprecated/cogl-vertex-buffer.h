@@ -76,6 +76,9 @@ COGL_BEGIN_DECLS
  * that have changed.
  */
 
+COGL_GTYPE_DECLARE_TYPE (vertex_buffer);
+COGL_GTYPE_DECLARE_TYPE (vertex_buffer_indices);
+
 /**
  * cogl_vertex_buffer_new:
  * @n_vertices: The number of vertices that your attributes will correspond to.

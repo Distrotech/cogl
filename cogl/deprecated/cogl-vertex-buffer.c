@@ -108,6 +108,7 @@
 #include "cogl-primitive-private.h"
 #include "cogl-journal-private.h"
 #include "cogl1-context.h"
+#include "cogl-gtype-private.h"
 
 #define PAD_FOR_ALIGNMENT(VAR, TYPE_SIZE) \
   (VAR = TYPE_SIZE + ((VAR - 1) & ~(TYPE_SIZE - 1)))
@@ -118,7 +119,9 @@ static CoglUserDataKey _cogl_vertex_buffer_pipeline_priv_key;
 
 COGL_HANDLE_DEFINE (VertexBuffer, vertex_buffer);
 COGL_OBJECT_DEFINE_DEPRECATED_REF_COUNTING (vertex_buffer);
+COGL_GTYPE_DEFINE_CLASS (VertexBuffer, vertex_buffer);
 COGL_HANDLE_DEFINE (VertexBufferIndices, vertex_buffer_indices);
+COGL_GTYPE_DEFINE_CLASS (VertexBufferIndices, vertex_buffer_indices);
 
 CoglHandle
 cogl_vertex_buffer_new (unsigned int n_vertices)
