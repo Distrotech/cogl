@@ -113,7 +113,7 @@ uint32_t cogl_texture_error_quark (void);
  *
  * Creates a new #CoglTexture with the specified dimensions and pixel format.
  *
- * Return value: A newly created #CoglTexture or %NULL on failure
+ * Return value: (transfer full): A newly created #CoglTexture or %NULL on failure
  *
  * Since: 0.8
  */
@@ -139,7 +139,8 @@ cogl_texture_new_with_size (unsigned int width,
  *
  * Creates a #CoglTexture from an image file.
  *
- * Return value: A newly created #CoglTexture or %NULL on failure
+ * Return value: (transfer full): A newly created #CoglTexture or
+ *               %NULL on failure
  *
  * Since: 0.8
  */
@@ -169,7 +170,8 @@ cogl_texture_new_from_file (const char       *filename,
  *
  * Creates a new #CoglTexture based on data residing in memory.
  *
- * Return value: A newly created #CoglTexture or %NULL on failure
+ * Return value: (transfer full): A newly created #CoglTexture or
+ *               %NULL on failure
  *
  * Since: 0.8
  */
@@ -203,7 +205,8 @@ cogl_texture_new_from_data (int width,
  * the waste arguments to tell Cogl which region should be mapped to
  * the texture coordinate range [0:1].
  *
- * Return value: A newly created #CoglTexture or %NULL on failure
+ * Return value: (transfer full): A newly created #CoglTexture or
+ *               %NULL on failure
  *
  * Since: 0.8
  */
@@ -225,7 +228,8 @@ cogl_texture_new_from_foreign (unsigned int gl_handle,
  *
  * Creates a #CoglTexture from a #CoglBitmap.
  *
- * Return value: A newly created #CoglTexture or %NULL on failure
+ * Return value: (transfer full): A newly created #CoglTexture or
+ *               %NULL on failure
  *
  * Since: 1.0
  */
@@ -541,7 +545,8 @@ cogl_texture_set_region_from_bitmap (CoglTexture *texture,
  * not need to keep one separately if you only want to use the sub
  * texture.
  *
- * Return value: A newly created #CoglTexture or %NULL on failure
+ * Return value: (transfer full): A newly created #CoglTexture or
+ *               %NULL on failure
  * Since: 1.2
  */
 CoglTexture *
@@ -552,7 +557,7 @@ cogl_texture_new_from_sub_texture (CoglTexture *full_texture,
                                    int sub_height);
 
 /**
- * cogl_texture_ref:
+ * cogl_texture_ref: (skip)
  * @texture: a #CoglTexture.
  *
  * Increment the reference count for a cogl texture.
@@ -566,7 +571,7 @@ void *
 cogl_texture_ref (void *texture);
 
 /**
- * cogl_texture_unref:
+ * cogl_texture_unref: (skip)
  * @texture: a #CoglTexture.
  *
  * Decrement the reference count for a cogl texture.
