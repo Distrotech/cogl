@@ -33,6 +33,7 @@
 
 #include "cogl-shader-private.h"
 #include "cogl-program-private.h"
+#include "cogl-gtype-private.h"
 
 #include <string.h>
 
@@ -40,6 +41,7 @@ static void _cogl_program_free (CoglProgram *program);
 
 COGL_HANDLE_DEFINE (Program, program);
 COGL_OBJECT_DEFINE_DEPRECATED_REF_COUNTING (program);
+COGL_GTYPE_DEFINE_CLASS (Program, program);
 
 /* A CoglProgram is effectively just a list of shaders that will be
    used together and a set of values for the custom uniforms. No

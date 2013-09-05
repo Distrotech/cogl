@@ -218,6 +218,9 @@ COGL_BEGIN_DECLS
  * experimental #CoglShader API is the proposed replacement.
  */
 
+COGL_GTYPE_DECLARE_TYPE (program);
+COGL_GTYPE_DECLARE_TYPE (shader);
+
 /**
  * CoglShaderType:
  * @COGL_SHADER_TYPE_VERTEX: A program for proccessing vertices
