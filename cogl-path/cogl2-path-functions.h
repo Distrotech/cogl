@@ -34,6 +34,8 @@
 
 COGL_BEGIN_DECLS
 
+COGL_GTYPE_DECLARE_TYPE (path);
+
 #define cogl_path_new cogl2_path_new
 /**
  * cogl_path_new:
