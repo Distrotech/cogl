@@ -30,6 +30,7 @@
 #include "cogl-object-private.h"
 
 #include "cogl-primitive.h"
+#include "cogl-vertex-buffer.h"
 
 #include <glib.h>
 
