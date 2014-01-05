@@ -28,6 +28,9 @@
    language is requested. */
 #undef ENABLE_NLS
 
+/* Whether to enable building unit tests */
+#undef ENABLE_UNIT_TESTS
+
 /* The prefix for our gettext translation domains. */
 #undef GETTEXT_PACKAGE
 
@@ -126,6 +129,9 @@
 /* Have GLES 2.0 for rendering */
 #undef HAVE_COGL_GLES2
 
+/* Have WebGL for rendering */
+#undef HAVE_COGL_WEBGL
+
 /* Define if the GNU dcgettext() function is already present or preinstalled.
    */
 #undef HAVE_DCGETTEXT
@@ -165,6 +171,9 @@
 
 /* Define to 1 if you have the <float.h> header file. */
 #undef HAVE_FLOAT_H
+
+/* Has the __FLOAT_WORD_ORDER macro */
+#undef HAVE_FLOAT_WORD_ORDER
 
 /* Define to 1 if you have the <fstab.h> header file. */
 #undef HAVE_FSTAB_H
@@ -300,6 +309,9 @@
 
 /* Define to 1 if you have the `setmntent' function. */
 #undef HAVE_SETMNTENT
+
+/* Define to 1 if you have the `sincos' function. */
+#undef HAVE_SINCOS
 
 /* Define to 1 if you have the `splice' function. */
 #undef HAVE_SPLICE
@@ -467,9 +479,6 @@
    */
 #undef LT_OBJDIR
 
-/* Define to 1 if your C compiler doesn't accept -c and -o together. */
-#undef NO_MINUS_C_MINUS_O
-
 /* global 'sys_errlist' not found */
 #undef NO_SYS_ERRLIST
 
@@ -557,6 +566,9 @@
 # undef __EXTENSIONS__
 #endif
 
+
+/* Cogl is being compiled with emscripten */
+#undef USING_EMSCRIPTEN
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */
