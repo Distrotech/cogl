@@ -49,7 +49,8 @@ g_quark_from_static_string (const gchar *string)
     {
       GQuark new_quark = _next_quark++;
       g_hash_table_insert (_quark_hash_table,
-                           GUINT_TO_POINTER (new_quark), (gpointer)string);
+                           (gpointer)string,
+                           GUINT_TO_POINTER (new_quark));
       return new_quark;
     }
   else
