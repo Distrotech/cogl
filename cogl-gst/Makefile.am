@@ -83,7 +83,7 @@ CoglGst_2_0_gir_VERSION = 2.0
 CoglGst_2_0_gir_LIBS = $(top_builddir)/cogl/libcogl.la libcogl-gst.la
 CoglGst_2_0_gir_FILES = $(source_h) $(source_c)
 CoglGst_2_0_gir_CFLAGS = $(AM_CPPFLAGS) $(COGL_GST_DEP_CFLAGS)
-CoglGst_2_0_gir_INCLUDES = GObject-2.0 Gst-1.0 GstBase-1.0
+CoglGst_2_0_gir_INCLUDES = GObject-2.0 Gst-1.0 GstBase-1.0 Cogl-2.0
 CoglGst_2_0_gir_EXPORT_PACKAGES = cogl-gst-2.0-experimental
 CoglGst_2_0_gir_SCANNERFLAGS = \
 	--warn-all \
@@ -93,6 +93,7 @@ CoglGst_2_0_gir_SCANNERFLAGS = \
 	--c-include="gst/gst.h" \
 	--include-uninstalled=$(top_builddir)/cogl/Cogl-2.0.gir \
 	--pkg gstreamer-1.0 \
+	--pkg cogl-2.0-experimental \
 	--add-init-section="gst_init(NULL, NULL);"
 
 INTROSPECTION_GIRS += CoglGst-2.0.gir
