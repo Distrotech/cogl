@@ -389,6 +389,7 @@ cogl_sources_c += \
 	$(srcdir)/winsys/cogl-texture-pixmap-x11-private.h
 endif
 if SUPPORT_GLX
+cogl_public_h += $(srcdir)/cogl-glx.h
 cogl_sources_c += \
 	$(srcdir)/cogl-glx-renderer-private.h \
 	$(srcdir)/cogl-glx-display-private.h \
@@ -447,6 +448,7 @@ cogl_sources_c += \
 	$(srcdir)/winsys/cogl-winsys-egl-android-private.h
 endif
 if SUPPORT_EGL
+cogl_public_h += $(srcdir)/cogl-egl.h
 cogl_nodist_experimental_h += \
        $(builddir)/cogl-egl-defines.h
 
@@ -618,7 +620,7 @@ if UNIT_TESTS
 Cogl_2_0_gir_LIBS += $(top_builddir)/test-fixtures/libtest-fixtures.la
 endif
 Cogl_2_0_gir_FILES = $(cogl_public_h) cogl-enum-types.h
-Cogl_2_0_gir_CFLAGS = $(AM_CPPFLAGS) $(COGL_DEP_CFLAGS) -UCOGL_ENABLE_EXPERIMENTAL_API -UCOGL_ENABLE_EXPERIMENTAL_2_0_API -UCOGL_COMPILATION -D__COGL_H_INSIDE__ -D__COGL_XLIB_H_INSIDE__
+Cogl_2_0_gir_CFLAGS = $(AM_CPPFLAGS) $(COGL_DEP_CFLAGS) -UCOGL_ENABLE_EXPERIMENTAL_API -UCOGL_ENABLE_EXPERIMENTAL_2_0_API -UCOGL_COMPILATION -D__COGL_H_INSIDE__ -D__COGL_XLIB_H_INSIDE__ -D__COGL_EGL_H_INSIDE__ -D__COGL_GLX_H_INSIDE__
 Cogl_2_0_gir_INCLUDES = GL-1.0 GObject-2.0
 Cogl_2_0_gir_EXPORT_PACKAGES = cogl2
 Cogl_2_0_gir_SCANNERFLAGS = --warn-all --c-include='cogl/cogl.h'
