@@ -46,6 +46,7 @@
 #include "cogl-texture-pixmap-x11.h"
 
 typedef struct _CoglDamageRectangle CoglDamageRectangle;
+typedef struct _CoglTexturePixmapX11Right CoglTexturePixmapX11Right;
 
 struct _CoglDamageRectangle
 {
@@ -58,6 +59,8 @@ struct _CoglDamageRectangle
 struct _CoglTexturePixmapX11
 {
   CoglTexture _parent;
+
+  CoglTexture *right;
 
   Pixmap pixmap;
   CoglTexture *tex;
@@ -76,10 +79,50 @@ struct _CoglTexturePixmapX11
 
   void *winsys;
 
+  CoglBool stereo;
+
   /* During the pre_paint method, this will be set to TRUE if we
      should use the winsys texture, otherwise we will use the regular
      texture */
   CoglBool use_winsys_texture;
 };
+
+struct _CoglTexturePixmapX11Right
+{
+  CoglTexture _parent;
+
+  CoglTexturePixmapX11 *left;
+};
+
+void
+_cogl_texture_pixmap_x11_update (CoglTexturePixmapX11 *tex_pixmap,
+                                 CoglBool right,
+                                 CoglBool needs_mipmap);
+
+CoglTexture *
+_cogl_texture_pixmap_x11_get_texture (CoglTexturePixmapX11 *tex_pixmap,
+                                      CoglBool right);
+
+void
+_cogl_texture_pixmap_x11_do_foreach_sub_texture_in_region
+                                  (CoglTexturePixmapX11     *tex_pixmap,
+                                   CoglTexture              *child_tex,
+                                   float                     virtual_tx_1,
+                                   float                     virtual_ty_1,
+                                   float                     virtual_tx_2,
+                                   float                     virtual_ty_2,
+                                   CoglMetaTextureCallback   callback,
+                                   void                     *user_data);
+
+#define COGL_TEXTURE_PIXMAP_X11_RIGHT(X) ((CoglTexturePixmapX11Right *)X)
+
+GType cogl_texture_pixmap_x11_right_get_gtype (void);
+
+CoglTexture *
+_cogl_texture_pixmap_x11_right_new (CoglTexturePixmapX11 *left);
+
+CoglBool
+cogl_is_texture_pixmap_x11_right (void *object);
+
 
 #endif /* __COGL_TEXTURE_PIXMAP_X11_PRIVATE_H */

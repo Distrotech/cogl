@@ -442,6 +442,7 @@ cogl_sources_c += \
 	$(srcdir)/cogl-xlib.c \
 	$(srcdir)/cogl-xlib-private.h \
 	$(srcdir)/winsys/cogl-texture-pixmap-x11.c \
+	$(srcdir)/winsys/cogl-texture-pixmap-x11-right.c \
 	$(srcdir)/winsys/cogl-texture-pixmap-x11-private.h
 endif
 if SUPPORT_GLX

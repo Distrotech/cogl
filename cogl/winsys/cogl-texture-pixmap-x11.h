@@ -138,6 +138,44 @@ cogl_texture_pixmap_x11_new (CoglContext *context,
                              CoglError **error);
 
 /**
+ * cogl_texture_pixmap_x11_new_stereo:
+ * @context: A #CoglContext
+ * @pixmap: A X11 pixmap ID
+ * @automatic_updates: Whether to automatically copy the contents of
+ * the pixmap to the texture.
+ * @error: A #CoglError for exceptions
+ *
+ * Creates a texture that contains the contents of @pixmap, which has
+ * stereo content. (Different images for the right and left eyes.)
+ * The left image is accessed by using the texture directly; the
+ * right image is accessed by using the texture returned by
+ * cogl_texture_pixmap_x11_create_right_texture().
+ *
+ * In general, you should not use this function unless you have
+ * queried the %GLX_STEREO_TREE_EXT attribute of the corresponding
+ * window using glXQueryDrawable() and determined that the window is
+ * stereo. Note that this attribute can change over time and
+ * notification is also provided through events defined in the
+ * EXT_stereo_tree GLX extension. As long as the system has support for
+ * stereo content, drawing using the stereo pixmap will not
+ * produce an error even if the window doesn't have stereo
+ * content any more, but drawing with the right pixmap will produce
+ * undefined output, so you need to listen for these events and
+ * re-render to avoid race conditions. (Recreating a non-stereo
+ * pixmap is not necessary, but may save resources.)
+ *
+ * Return value: a new #CoglTexturePixmapX11 instance
+ *
+ * Since: 1.20
+ * Stability: Unstable
+ */
+CoglTexturePixmapX11 *
+cogl_texture_pixmap_x11_new_stereo (CoglContext *context,
+                                    uint32_t pixmap,
+                                    CoglBool automatic_updates,
+                                    CoglError **error);
+
+/**
  * cogl_texture_pixmap_x11_update_area:
  * @texture: A #CoglTexturePixmapX11 instance
  * @x: x coordinate of the area to update
@@ -204,6 +242,25 @@ cogl_texture_pixmap_x11_set_damage_object (CoglTexturePixmapX11 *texture,
                                                                   report_level);
 
 /**
+ * cogl_texture_pixmap_x11_create_right_texture:
+ * @texture: A #CoglTexturePixmapX11 instance created with
+ *           cogl_texture_pixmap_x1_new_stereo().
+ *
+ * Creates a texture object that corresponds to the right-eye image of a stereo
+ * #CoglTexturePixmapX11. If such an object already exists, a new reference
+ * to the existing object will be returned. @texture must be created
+ * using cogl_texture_pixmap_x1_new_stereo().
+ *
+ * Return value: a newly created #ClutterTexture or a reference to
+ *  a previously created #ClutterTexture.
+ *
+ * Since: 1.20
+ * Stability: Unstable
+ */
+CoglTexture *
+cogl_texture_pixmap_x11_create_right_texture (CoglTexturePixmapX11 *texture);
+
+/**
  * cogl_is_texture_pixmap_x11:
  * @object: A pointer to a #CoglObject
  *
@@ -212,7 +269,7 @@ cogl_texture_pixmap_x11_set_damage_object (CoglTexturePixmapX11 *texture,
  * Return value: %TRUE if the object is a #CoglTexturePixmapX11, and
  *   %FALSE otherwise
  *
- * Since: 1.4
+* Since: 1.4
  * Stability: Unstable
  */
 CoglBool
