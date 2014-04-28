@@ -880,6 +880,8 @@ update_winsys_features (CoglContext *context, CoglError **error)
   return TRUE;
 }
 
+#include <stdio.h>
+
 static void
 glx_attributes_from_framebuffer_config (CoglDisplay *display,
                                         CoglFramebufferConfig *config,
@@ -909,6 +911,11 @@ glx_attributes_from_framebuffer_config (CoglDisplay *display,
   attributes[i++] = 1;
   attributes[i++] = GLX_STENCIL_SIZE;
   attributes[i++] = config->need_stencil ? 1: GLX_DONT_CARE;
+  if (config->stereo_enabled)
+    {
+      attributes[i++] = GLX_STEREO;
+      attributes[i++] = TRUE;
+    }
 
   if (glx_renderer->glx_major == 1 && glx_renderer->glx_minor >= 4 &&
       config->samples_per_pixel)
@@ -948,6 +955,21 @@ find_fbconfig (CoglDisplay *display,
                                              xscreen_num,
                                              attributes,
                                              &n_configs);
+  if ((!config || n_configs == 0) && config->stereo_enabled)
+    {
+      CoglFramebufferConfig modified = *config;
+      modified.stereo_enabled = FALSE;
+
+      glx_attributes_from_framebuffer_config (display, &modified, attributes);
+
+      configs = glx_renderer->glXChooseFBConfig (xlib_renderer->xdpy,
+						 xscreen_num,
+						 attributes,
+						 &n_configs);
+
+      XFree (configs);
+    }
+
   if (!configs || n_configs == 0)
     {
       _cogl_set_error (error, COGL_WINSYS_ERROR,
@@ -1284,6 +1306,17 @@ _cogl_winsys_onscreen_init (CoglOnscreen *onscreen,
                                                        &samples);
       g_return_val_if_fail (status == Success, TRUE);
       framebuffer->samples_per_pixel = samples;
+    }
+
+  if (framebuffer->config.stereo_enabled)
+    {
+      int stereo;
+      int status = glx_renderer->glXGetFBConfigAttrib (xlib_renderer->xdpy,
+                                                       fbconfig,
+                                                       GLX_STEREO,
+                                                       &stereo);
+      g_return_val_if_fail (status == Success, TRUE);
+      framebuffer->is_stereo = stereo != 0;
     }
 
   /* FIXME: We need to explicitly Select for ConfigureNotify events.
@@ -1856,7 +1889,7 @@ _cogl_winsys_onscreen_swap_region (CoglOnscreen *onscreen,
                                       rect[0], rect[1], x2, y2,
                                       GL_COLOR_BUFFER_BIT, GL_NEAREST);
         }
-      context->glDrawBuffer (GL_BACK);
+      context->glDrawBuffer (context->current_gl_draw_buffer);
     }
 
   /* NB: unlike glXSwapBuffers, glXCopySubBuffer and

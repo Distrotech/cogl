@@ -107,6 +107,25 @@ cogl_onscreen_template_set_swap_throttled (
                                           CoglBool throttled);
 
 /**
+ * cogl_onscreen_template_set_stereo_enabled:
+ * @onscreen_template: A #CoglOnscreenTemplate template framebuffer
+ * @enabled: Whether framebuffers are created with stereo buffers
+ *
+ * Sets whether future #CoglOnscreen framebuffers derived from this
+ * template are attempted to be created with both left and right
+ * buffers, for use with stereo display. If the display system
+ * does not support stereo, then the framebuffers will be created
+ * with only a single buffer. (Use clutter_framebuffer_get_is_stereo()
+ * to check.)
+ *
+ * Since: 1.20
+ * Stability: unstable
+ */
+void
+cogl_onscreen_template_set_stereo_enabled (
+					   CoglOnscreenTemplate *onscreen_template,
+					   CoglBool enabled);
+/**
  * cogl_is_onscreen_template:
  * @object: A #CoglObject pointer
  *

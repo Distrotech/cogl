@@ -127,6 +127,8 @@ _cogl_framebuffer_init (CoglFramebuffer *framebuffer,
 
   framebuffer->samples_per_pixel = 0;
 
+  framebuffer->is_stereo = FALSE;
+
   framebuffer->clip_stack = NULL;
 
   framebuffer->journal = _cogl_journal_new (framebuffer);
@@ -907,6 +909,14 @@ _cogl_framebuffer_compare_depth_write_state (CoglFramebuffer *a,
     COGL_FRAMEBUFFER_STATE_DEPTH_WRITE : 0;
 }
 
+static unsigned long
+_cogl_framebuffer_compare_stereo_mode (CoglFramebuffer *a,
+				       CoglFramebuffer *b)
+{
+  return a->stereo_mode != b->stereo_mode ?
+    COGL_FRAMEBUFFER_STATE_STEREO_MODE : 0;
+}
+
 unsigned long
 _cogl_framebuffer_compare (CoglFramebuffer *a,
                            CoglFramebuffer *b,
@@ -958,6 +968,10 @@ _cogl_framebuffer_compare (CoglFramebuffer *a,
         case COGL_FRAMEBUFFER_STATE_INDEX_DEPTH_WRITE:
           differences |=
             _cogl_framebuffer_compare_depth_write_state (a, b);
+          break;
+        case COGL_FRAMEBUFFER_STATE_INDEX_STEREO_MODE:
+          differences |=
+            _cogl_framebuffer_compare_stereo_mode (a, b);
           break;
         default:
           g_warn_if_reached ();
@@ -1046,6 +1060,15 @@ _cogl_framebuffer_get_stencil_bits (CoglFramebuffer *framebuffer)
   return bits.stencil;
 }
 
+gboolean
+cogl_framebuffer_get_is_stereo (CoglFramebuffer *framebuffer)
+{
+  if (framebuffer->allocated)
+    return framebuffer->is_stereo;
+  else
+    return framebuffer->config.stereo_enabled;
+}
+
 CoglColorMask
 cogl_framebuffer_get_color_mask (CoglFramebuffer *framebuffer)
 {
@@ -1067,6 +1090,29 @@ cogl_framebuffer_set_color_mask (CoglFramebuffer *framebuffer,
   if (framebuffer->context->current_draw_buffer == framebuffer)
     framebuffer->context->current_draw_buffer_changes |=
       COGL_FRAMEBUFFER_STATE_COLOR_MASK;
+}
+
+CoglStereoMode
+cogl_framebuffer_get_stereo_mode (CoglFramebuffer *framebuffer)
+{
+  return framebuffer->stereo_mode;
+}
+
+void
+cogl_framebuffer_set_stereo_mode (CoglFramebuffer *framebuffer,
+				  CoglStereoMode   stereo_mode)
+{
+  if (framebuffer->stereo_mode == stereo_mode)
+    return;
+
+  /* XXX: Currently color mask changes don't go through the journal */
+  _cogl_framebuffer_flush_journal (framebuffer);
+
+  framebuffer->stereo_mode = stereo_mode;
+
+  if (framebuffer->context->current_draw_buffer == framebuffer)
+    framebuffer->context->current_draw_buffer_changes |=
+      COGL_FRAMEBUFFER_STATE_STEREO_MODE;
 }
 
 CoglBool

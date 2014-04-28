@@ -236,6 +236,32 @@ _cogl_framebuffer_gl_flush_front_face_winding_state (CoglFramebuffer *framebuffe
   context->current_pipeline_age--;
 }
 
+static void
+_cogl_framebuffer_gl_flush_stereo_mode_state (CoglFramebuffer *framebuffer)
+{
+  CoglContext *ctx = framebuffer->context;
+  GLenum draw_buffer = GL_BACK;
+
+  switch (framebuffer->stereo_mode)
+    {
+    case COGL_STEREO_BOTH:
+      draw_buffer = GL_BACK;
+      break;
+    case COGL_STEREO_LEFT:
+      draw_buffer = GL_BACK_LEFT;
+      break;
+    case COGL_STEREO_RIGHT:
+      draw_buffer = GL_BACK_RIGHT;
+      break;
+    }
+
+  if (ctx->current_gl_draw_buffer != draw_buffer)
+    {
+      GE (ctx, glDrawBuffer (draw_buffer));
+      ctx->current_gl_draw_buffer = draw_buffer;
+    }
+}
+
 void
 _cogl_framebuffer_gl_bind (CoglFramebuffer *framebuffer, GLenum target)
 {
@@ -376,6 +402,9 @@ _cogl_framebuffer_gl_flush_state (CoglFramebuffer *draw_buffer,
         case COGL_FRAMEBUFFER_STATE_INDEX_DEPTH_WRITE:
           /* Nothing to do for depth write state change; the state will always
            * be taken into account when flushing the pipeline's depth state. */
+          break;
+        case COGL_FRAMEBUFFER_STATE_INDEX_STEREO_MODE:
+          _cogl_framebuffer_gl_flush_stereo_mode_state (draw_buffer);
           break;
         default:
           g_warn_if_reached ();
